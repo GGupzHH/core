@@ -305,12 +305,14 @@ export function createHydrationRenderer(
   return baseCreateRenderer(options, createHydrationFunctions)
 }
 
+// baseCreateRenderer重载
 // overload 1: no hydration
 function baseCreateRenderer<
-  HostNode = RendererNode,
-  HostElement = RendererElement
+HostNode = RendererNode,
+HostElement = RendererElement
 >(options: RendererOptions<HostNode, HostElement>): Renderer<HostElement>
 
+// baseCreateRenderer重载
 // overload 2: with hydration
 function baseCreateRenderer(
   options: RendererOptions<Node, Element>,
@@ -318,6 +320,7 @@ function baseCreateRenderer(
 ): HydrationRenderer
 
 // implementation
+// baseCreateRenderer最后实现出了vnode的diff算法生成正式DOM的方法，这个方法调用了rendererOptions的所有关于节点的操作通过diff算法，里面还包含了一些热更新的方法
 function baseCreateRenderer(
   options: RendererOptions,
   createHydrationFns?: typeof createHydrationFunctions
