@@ -1,3 +1,4 @@
+/* 基础的节点操作 */
 import { RendererOptions } from '@vue/runtime-core'
 
 export const svgNS = 'http://www.w3.org/2000/svg'

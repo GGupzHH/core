@@ -1,3 +1,4 @@
+/* 一些旧的属性的操作 */
 import { patchClass } from './modules/class'
 import { patchStyle } from './modules/style'
 import { patchAttr } from './modules/attrs'
