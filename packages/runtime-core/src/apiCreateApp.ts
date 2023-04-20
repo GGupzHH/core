@@ -180,6 +180,8 @@ export function createAppAPI<HostElement>(
 ): CreateAppFunction<HostElement> {
   // rootComponent根组件
   // 第二个参数全局属性会传递_props上面
+  // 给实例挂载各种hook方法 
+  // 包含 use mixin conponent directive mount unmount provide
   return function createApp(rootComponent, rootProps = null) {
     if (!isFunction(rootComponent)) {
       rootComponent = { ...rootComponent }
@@ -312,6 +314,7 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // 内部调用了patch函数去更新组件
             render(vnode, rootContainer, isSVG)
           }
           isMounted = true

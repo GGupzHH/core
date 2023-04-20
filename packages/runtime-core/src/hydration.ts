@@ -49,6 +49,8 @@ const isComment = (node: Node): node is Comment =>
 // it out creates a ton of unnecessary complexity.
 // Hydration also depends on some renderer internal logic which needs to be
 // passed in via arguments.
+// hydration 是将服务器端渲染(SSR)生成的 HTML 字符串转换成客户端可交互的状态的过程，主要目的是保持服务器端渲染后的 DOM 结构和客户端渲染时的 DOM 结构一致。
+// hydration 是与 DOM 密切相关的过程，因此需要放在核心模块中实现。虽然将其拆分出来可以降低耦合度，但这样做会导致许多不必要的复杂性。同时，hydration 也依赖于渲染器(renderer)的内部逻辑，因此需要通过参数传递给其它组件或模块。
 export function createHydrationFunctions(
   rendererInternals: RendererInternals<Node, Element>
 ) {
