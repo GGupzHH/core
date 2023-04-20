@@ -321,6 +321,8 @@ function baseCreateRenderer(
 
 // implementation
 // baseCreateRenderer最后实现出了vnode的diff算法生成正式DOM的方法，这个方法调用了rendererOptions的所有关于节点的操作通过diff算法，里面还包含了一些热更新的方法
+// 根据不同平台生成不同的render函数
+// 它接收一个选项对象，并返回一个渲染器对象。渲染器对象封装了将组件渲染成虚拟DOM并将其挂载到实际的DOM元素上的方法和属性。
 function baseCreateRenderer(
   options: RendererOptions,
   createHydrationFns?: typeof createHydrationFunctions
@@ -2334,6 +2336,17 @@ function baseCreateRenderer(
     } else {
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)
     }
+    // 在 Vue.js 中，每个组件实例都有一个队列，用于存储需要在 DOM 更新之后执行的回调函数。这些回调函数通常称为 “后置钩子”，它们包括 onMounted、onUpdated 和 onUnmounted 等生命周期钩子函数，以及 watchEffect、nextTick 等其他异步操作。
+
+    // 当组件的数据发生变化时，Vue.js 会将这些后置钩子函数推入组件实例的队列中，并等待下一次 DOM 更新完成之后执行。这样可以保证后置钩子的执行顺序和稳定性。
+
+    // 而 flushPostFlushCbs 函数就是负责执行这些后置钩子的函数。它接收一个参数 instance，表示当前组件实例，然后依次调用其队列中的回调函数。
+    // 具体来说，flushPostFlushCbs 函数的主要作用如下：
+
+    // 将当前组件实例的后置钩子函数队列进行排序，按照优先级从高到低的顺序执行。
+    // 依次调用每个后置钩子函数，并捕获其中的错误信息并输出。
+    // 清空组件实例的后置钩子函数队列，确保下一次更新时只执行新添加的后置钩子函数。
+    // 需要注意的是，flushPostFlushCbs 函数并不需要手动调用，它会在 Vue.js 内部自动调用。这个函数通常在组件更新时被触发，在 DOM 更新完成之后执行所有的后置钩子函数，并清空队列。
     flushPostFlushCbs()
     container._vnode = vnode
   }

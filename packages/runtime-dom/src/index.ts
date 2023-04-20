@@ -64,7 +64,15 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+
+/**
+ * @description: 入口函数
+ * @param {*} param1 各种配置项
+ * @return {*}
+ */
 export const createApp = ((...args) => {
+  // 此时已经将对应平台render函数生成 
+  // 内部调用createAPPAPI方法 挂载各种实例hook函数 例如 use component directive mixin mount unmount provide
   const app = ensureRenderer().createApp(...args)
 
   if (__DEV__) {
@@ -73,7 +81,9 @@ export const createApp = ((...args) => {
   }
 
   const { mount } = app
+  // 重写mount方法
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // containerOrSelector根节点DOM
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
 
@@ -101,6 +111,7 @@ export const createApp = ((...args) => {
 
     // clear content before mounting
     container.innerHTML = ''
+    // createApp中的mount
     const proxy = mount(container, false, container instanceof SVGElement)
     if (container instanceof Element) {
       container.removeAttribute('v-cloak')
@@ -178,6 +189,11 @@ function injectCompilerOptionsCheck(app: App) {
   }
 }
 
+
+/**
+ * @description: 获取DOM节点的方法 参数可以是DOM元素 字符串
+ * @return {*}
+ */
 function normalizeContainer(
   container: Element | ShadowRoot | string
 ): Element | null {
