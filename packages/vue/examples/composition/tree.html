@@ -22,7 +22,7 @@
 </script>
 <!-- item script -->
 <script>
-const { reactive, computed, toRefs } = Vue
+const { ref, reactive, computed, toRefs } = Vue
 
 const TreeItem = {
   name: 'TreeItem', // necessary for self-reference
@@ -37,6 +37,10 @@ const TreeItem = {
         return props.model.children && props.model.children.length
       })
     })
+    const test = reactive({
+      name: '张三'
+    })
+    const test1 = ref(3)
 
     function toggle() {
       state.open = !state.open

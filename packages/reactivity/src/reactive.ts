@@ -89,6 +89,7 @@ export type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRefSimple<T>
 export function reactive<T extends object>(target: T): UnwrapNestedRefs<T>
 export function reactive(target: object) {
   // if trying to observe a readonly proxy, return the readonly version.
+  // 判断是否只读
   if (isReadonly(target)) {
     return target
   }
@@ -178,6 +179,15 @@ export function shallowReadonly<T extends object>(target: T): Readonly<T> {
   )
 }
 
+/**
+ * @description: 这个函数的作用是创建一个响应式对象。
+ * @param target 表示要转换成响应式对象的目标对象。
+ * @param isReadonly 表示目标对象是否只读。
+ * @param baseHandlers 表示基础操作的 Proxy 处理器。
+ * @param collectionHandlers 表示集合操作的 Proxy 处理器。
+ * @param proxyMap 是一个 WeakMap，用于存储已经创建的响应式对象和其对应的代理对象。
+ * @return {*}
+ */
 function createReactiveObject(
   target: Target,
   isReadonly: boolean,
@@ -185,6 +195,7 @@ function createReactiveObject(
   collectionHandlers: ProxyHandler<any>,
   proxyMap: WeakMap<Target, any>
 ) {
+  // 先判断是否是一个对象
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
@@ -193,6 +204,8 @@ function createReactiveObject(
   }
   // target is already a Proxy, return it.
   // exception: calling readonly() on a reactive object
+  // 是否有__v_raw这个属性
+  // 如果目标对象已经被处理为响应式对象，则直接返回它的代理对象
   if (
     target[ReactiveFlags.RAW] &&
     !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
@@ -201,10 +214,12 @@ function createReactiveObject(
   }
   // target already has corresponding Proxy
   const existingProxy = proxyMap.get(target)
+  // 如果在 proxyMap 中能够找到该对象的代理对象，则直接返回该代理对象。
   if (existingProxy) {
     return existingProxy
   }
   // only specific value types can be observed.
+  // 如果目标对象没有被处理过，则会根据其类型选择相应的 Proxy 处理器，并使用 new Proxy 创建代理对象。
   const targetType = getTargetType(target)
   if (targetType === TargetType.INVALID) {
     return target
@@ -213,6 +228,7 @@ function createReactiveObject(
     target,
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
   )
+  // 最后，将原始对象和代理对象的对应关系存储到 proxyMap 中
   proxyMap.set(target, proxy)
   return proxy
 }
